@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import Login from './components/Login'
+import { Container, Typography } from '@mui/material'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useUserStore } from './store/userStore'
-import Login from './components/Login'
 import Home from './components/Home'
 import PanelAdmin from './components/PanelAdmin'
+import Pagos from './components/Pagos'
 
-function PrivateRoute({ element, allowedRoles }) {
+function PrivateRoute({ children, allowedRoles }) {
   const { user } = useUserStore()
-
   if (!user) return <Navigate to="/" />
   if (allowedRoles && !allowedRoles.includes(user.rol)) return <Navigate to="/home" />
-  return element
+  return children
 }
 
 function App() {
@@ -21,15 +22,28 @@ function App() {
         <Route
           path="/home"
           element={
-            <PrivateRoute element={<Home />} />
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
           }
         />
         <Route
           path="/admin"
           element={
-            <PrivateRoute element={<PanelAdmin />} allowedRoles={['admin']} />
+            <PrivateRoute allowedRoles={["admin"]}>
+              <PanelAdmin />
+            </PrivateRoute>
           }
         />
+        
+<Route
+  path="/pagos/:id"
+  element={
+    <PrivateRoute allowedRoles={["admin"]}>
+      <Pagos />
+    </PrivateRoute>
+  }
+/>
       </Routes>
     </BrowserRouter>
   )
